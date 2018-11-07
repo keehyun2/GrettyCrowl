@@ -31,7 +31,6 @@ import com.mongodb.MongoClientURI;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 
-@WebServlet(urlPatterns = { "/crawl" })
 public class CrawlServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
@@ -48,13 +47,15 @@ public class CrawlServlet extends HttpServlet {
 
 		Logger log = Logger.getLogger("com.gargoylesoftware");
 
-		Logger logger = Logger.getLogger("com.myapp");
+		Logger logger = Logger.getLogger("com");
 		
 		log.setLevel(Level.OFF);
 		
 		if (request.getParameter("keyword") == null || "".equals(request.getParameter("keyword"))) {
 			System.out.println("검색키워드가 입력되지 않았습니다.");
 			return;
+		}else {
+			System.out.println("검색키워드 : " + request.getParameter("keyword"));
 		}
 
 		dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
@@ -97,8 +98,7 @@ public class CrawlServlet extends HttpServlet {
 			doc.append("tit", webElement.findElement(By.className("tit")).getText());
 			docList.add(doc);
 			
-			logger.info(webElement.findElement(By.className("_productLazyImg")).getAttribute("src"));
-			logger.info(webElement.findElement(By.className("tit")).getText());
+			System.out.println(webElement.findElement(By.className("_productLazyImg")).getAttribute("src"));
 			System.out.println(webElement.findElement(By.className("tit")).getText());
 		}
 		collection.insertMany(docList);

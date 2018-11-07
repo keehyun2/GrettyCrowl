@@ -11,7 +11,7 @@
 
 	<servlet-mapping>
 		<servlet-name>CrawlServlet</servlet-name>
-		<url-pattern>/</url-pattern>
+		<url-pattern>/crawl</url-pattern>
 	</servlet-mapping>
 
 </web-app>
