@@ -2,6 +2,8 @@ package com;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -15,13 +17,25 @@ public class CrawlServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		NaverService ns = new NaverService();
-		String result = ns.collectProductList(request, response);
-		
 		response.setContentType("text/html; charset=UTF-8");
 		response.setCharacterEncoding("UTF-8");
 		PrintWriter out = response.getWriter();
-		out.print(result);
+		
+		// 로그 설정
+		Logger log = Logger.getLogger("com.gargoylesoftware");
+		log.setLevel(Level.OFF);
+		
+		// 검색어 필수 체크
+		if (request.getParameter("keyword") == null || "".equals(request.getParameter("keyword"))) {
+			out.println("검색키워드가 입력되지 않았습니다.");
+			out.flush();
+		}else {
+			out.println("검색키워드 : " + request.getParameter("keyword"));
+			NaverService ns = new NaverService();
+			String result = ns.collectProductList(request, response);
+			out.print(result);
+		}
+		
 		out.flush();
 	}
 
