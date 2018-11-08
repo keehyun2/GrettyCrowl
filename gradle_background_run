@@ -1,0 +1,1 @@
+nohup ./gradlew clean tomcatStartWar > tomcat.log 2>&1 & 
