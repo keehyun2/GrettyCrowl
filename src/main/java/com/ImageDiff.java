@@ -9,12 +9,12 @@ import javax.net.ssl.HttpsURLConnection;
 
 public class ImageDiff {
 
-	private double getDifferencePercent(String imgUrl1, String imgUrl2) throws IOException {
+	public double getDifferencePercent(BufferedImage img1, BufferedImage img2) throws IOException {
 		
 		System.setProperty("http.agent", "Chrome");
 		
-		BufferedImage img1 = getWebImg(imgUrl1);
-		BufferedImage img2 = getWebImg(imgUrl2);
+//		BufferedImage img1 = getWebImg(imgUrl1);
+//		BufferedImage img2 = getWebImg(imgUrl2);
 		
 		int width = img1.getWidth();
 		int height = img1.getHeight();
@@ -46,7 +46,7 @@ public class ImageDiff {
 		return Math.abs(r1 - r2) + Math.abs(g1 - g2) + Math.abs(b1 - b2);
 	}
 	
-	private BufferedImage getWebImg(String urlStr) throws IOException {
+	public BufferedImage getWebImg(String urlStr) throws IOException {
 		URL url = new URL(urlStr);
 //		URLConnection uc = urlObj.openConnection();
 		HttpsURLConnection con = (HttpsURLConnection) url.openConnection();

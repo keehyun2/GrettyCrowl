@@ -1,5 +1,6 @@
 package com;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -23,18 +24,19 @@ public class NaverService {
 	 * @param request
 	 * @param response
 	 * @return
-	 * @throws UnsupportedEncodingException
+	 * @throws IOException 
 	 */
-	public String collectProductList(HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {
+	public String collectProductList(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		
 		EventFiringWebDriver eDriver = new WebDriverConfig().getWebDriver(); 
 		DBUtil dbUtil = new DBUtil(); // 몽고 디비 연결
+		ImageDiff imageDiff = new ImageDiff(); 
 
 		// 실제 셀레니움을 사용해서 naver 쇼핑 데이터를 크롤링
 		String searchKeyword = URLEncoder.encode(request.getParameter("keyword"), "UTF-8"); 
 		StringBuilder sb = new StringBuilder();
 		sb.append("https://search.shopping.naver.com/search/all.nhn");
-		sb.append("?origQuery=%s&pagingIndex=1&pagingSize=40&viewType=list&sort=price_asc&frm=NVSHATC&sps=N&query=%s");
+		sb.append("?origQuery=%s&pagingIndex=1&pagingSize=10&viewType=list&sort=price_asc&frm=NVSHATC&sps=N&query=%s");
 		String url = String.format(sb.toString(), searchKeyword, searchKeyword);
 		eDriver.get(url);
 		List<WebElement> listGoods = eDriver.findElements(By.className("_itemSection"));
@@ -42,7 +44,7 @@ public class NaverService {
 
 //		int cnt = dbUtil.insertList(dbUtil.getCollection("naver"), listGoods, searchKeyword); // 몽고 디비 입력
 //		return cnt + "건 수집완료";
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		Gson gson = new GsonBuilder().setPrettyPrinting().excludeFieldsWithoutExposeAnnotation().create();
 		
 		List<ProductVO> prodList = new ArrayList<ProductVO>();
 		for (WebElement webElement : listGoods) {
@@ -51,9 +53,27 @@ public class NaverService {
 			productVO.setSearchKeyword(request.getParameter("keyword"));
 			productVO.setImgUrl(webElement.findElement(By.className("_productLazyImg")).getAttribute("src"));
 			productVO.setTit(webElement.findElement(By.className("tit")).getText());
+			productVO.setPrice(Integer.parseInt(webElement.findElement(By.className("_price_reload")).getText().replaceAll(",", ""))); 
+			productVO.setImgBuf(imageDiff.getWebImg(productVO.getImgUrl()));
 			prodList.add(productVO);
 		}
-		return gson.toJson(prodList);
+		
+		List<ProductVO> printList = new ArrayList<ProductVO>();
+		
+		prod:for (int i = 0; i < prodList.size(); i++) {
+			double diff = 0.0;
+			print:for (int j = 0; j < printList.size(); j++) {
+				diff = imageDiff.getDifferencePercent(prodList.get(i).getImgBuf(),printList.get(j).getImgBuf());
+				if(diff < 10.0){
+					prodList.get(i).setImgMinDiff(diff);
+					printList.get(j).getGroups().add(prodList.get(i));
+					continue prod;
+				}
+			}
+			printList.add(prodList.get(i));
+		}
+		
+		return gson.toJson(printList);
 		
 	}
 	
