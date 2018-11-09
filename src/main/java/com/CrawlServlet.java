@@ -17,7 +17,7 @@ public class CrawlServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		response.setContentType("text/html; charset=UTF-8");
+		response.setContentType("application/json; charset=UTF-8");
 		response.setCharacterEncoding("UTF-8");
 		PrintWriter out = response.getWriter();
 		
@@ -30,7 +30,7 @@ public class CrawlServlet extends HttpServlet {
 			out.println("검색키워드가 입력되지 않았습니다.");
 			out.flush();
 		}else {
-			out.println("검색키워드 : " + request.getParameter("keyword"));
+			//out.println("검색키워드 : " + request.getParameter("keyword"));
 			NaverService ns = new NaverService();
 			String result = ns.collectProductList(request, response);
 			out.print(result);
