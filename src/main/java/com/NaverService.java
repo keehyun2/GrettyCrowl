@@ -1,7 +1,6 @@
 package com;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +8,6 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.bson.Document;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.events.EventFiringWebDriver;
@@ -64,7 +62,7 @@ public class NaverService {
 			double diff = 0.0;
 			print:for (int j = 0; j < printList.size(); j++) {
 				diff = imageDiff.getDifferencePercent(prodList.get(i).getImgBuf(),printList.get(j).getImgBuf());
-				if(diff < 10.0){
+				if(diff < 20.0){
 					prodList.get(i).setImgMinDiff(diff);
 					printList.get(j).getGroups().add(prodList.get(i));
 					continue prod;
