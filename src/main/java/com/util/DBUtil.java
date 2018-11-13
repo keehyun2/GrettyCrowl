@@ -1,4 +1,4 @@
-package com;
+package com.util;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +41,6 @@ public class DBUtil {
 		
 		List<Document> docList = new ArrayList<Document>();
 		for (WebElement webElement : list) {
-
 			Document doc = new Document();
 			doc.append("searchKeyword", searchKeyword);
 			doc.append("imgUrl", webElement.findElement(By.className("_productLazyImg")).getAttribute("src"));

@@ -1,4 +1,4 @@
-package com;
+package com.util;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -34,6 +34,18 @@ public class ImageDiff {
 		long maxDiff = 3L * 255 * width * height;
 
 		return 100.0 * diff / maxDiff;
+	}
+	
+	/**
+	 * 유사율 계산 (1 - 차이율 = 유사율)
+	 * @param img1
+	 * @param img2
+	 * @return
+	 * @throws IOException
+	 */
+	public double getSimilarity(BufferedImage img1, BufferedImage img2) throws IOException {
+		
+		return 100.0-getDifferencePercent(img1, img2);
 	}
 
 	private int pixelDiff(int rgb1, int rgb2) {

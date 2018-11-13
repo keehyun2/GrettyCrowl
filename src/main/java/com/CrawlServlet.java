@@ -35,8 +35,7 @@ public class CrawlServlet extends HttpServlet {
 			String result = ns.collectProductList(request, response);
 			out.print(result);
 		}
-		
 		out.flush();
 	}
-
 }
+
