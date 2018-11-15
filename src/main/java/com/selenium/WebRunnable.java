@@ -15,7 +15,6 @@ public class WebRunnable implements Runnable {
 	
 	String url;
 	List<ProductVO> syncList;
-	ImageDiff imageDiff = new ImageDiff();
 	
 	public WebRunnable(String url, List<ProductVO> syncList) {
 		this.url = url;
@@ -24,6 +23,8 @@ public class WebRunnable implements Runnable {
 
 	@Override
 	public void run() {
+		
+		ImageDiff imageDiff = new ImageDiff();
 		EventFiringWebDriver eDriver = new WebDriverConfig().getWebDriver(); 
 		
 		eDriver.get(this.url);
@@ -38,6 +39,7 @@ public class WebRunnable implements Runnable {
 				productVO.setImgBuf(imageDiff.getWebImg(productVO.getImgUrl()));
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
+				System.out.println(productVO.getImgUrl());
 				e.printStackTrace();
 			}
 			this.syncList.add(productVO);
