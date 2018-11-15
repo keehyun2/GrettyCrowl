@@ -16,6 +16,10 @@ public class DBUtil {
 	
 	static MongoDatabase db = null;
 	
+	// 사용법
+//	int cnt = dbUtil.insertList(dbUtil.getCollection("naver"), listGoods, searchKeyword); // 몽고 디비 입력
+//	return cnt + "건 수집완료";
+	
 	/**
 	 * 몽고 디비에서 컬렉션 객체를 가져옴.
 	 * @param collectionName

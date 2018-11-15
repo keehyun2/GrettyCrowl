@@ -9,7 +9,7 @@ import com.google.gson.annotations.Expose;
 import lombok.Data;
 
 @Data
-public class ProductVO {
+public class ProductVO implements Comparable<ProductVO>{
 	
 //	@Expose
 //	private String searchKeyword;
@@ -28,6 +28,16 @@ public class ProductVO {
 	private List<ProductVO> groups = new ArrayList<ProductVO>(); // 비슷한 이미지 그룹
 	
 	private BufferedImage imgBuf; // 이미지 버퍼
+
+	@Override
+	public int compareTo(ProductVO vo) {
+		if (this.price < vo.getPrice()) {
+			return -1;
+		} else if (this.price > vo.getPrice()) {
+			return 1;
+		}
+		return 0;
+	}
 
 	//private double imgMinDiff = 100.0; // 최소 차이율 (사용안함)
 }
