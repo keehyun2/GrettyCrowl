@@ -2,14 +2,20 @@ package com.util;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
+import java.util.List;
 
+import javax.imageio.IIOException;
 import javax.imageio.ImageIO;
+import javax.imageio.stream.ImageInputStream;
 import javax.net.ssl.HttpsURLConnection;
+
+import com.ProductVO;
 
 public class ImageDiff {
 
-	public double getDifferencePercent(BufferedImage img1, BufferedImage img2) throws IOException {
+	public static double getDifferencePercent(BufferedImage img1, BufferedImage img2) throws IOException {
 		
 		System.setProperty("http.agent", "Chrome");
 		
@@ -43,12 +49,12 @@ public class ImageDiff {
 	 * @return
 	 * @throws IOException
 	 */
-	public double getSimilarity(BufferedImage img1, BufferedImage img2) throws IOException {
+	public static double getSimilarity(BufferedImage img1, BufferedImage img2) throws IOException {
 		
 		return 100.0-getDifferencePercent(img1, img2);
 	}
 
-	private int pixelDiff(int rgb1, int rgb2) {
+	private static int pixelDiff(int rgb1, int rgb2) {
 		int r1 = (rgb1 >> 16) & 0xff;
 		int g1 = (rgb1 >> 8) & 0xff;
 		int b1 = rgb1 & 0xff;
@@ -60,11 +66,46 @@ public class ImageDiff {
 	
 	public BufferedImage getWebImg(String urlStr) throws IOException {
 		URL url = new URL(urlStr);
-//		URLConnection uc = urlObj.openConnection();
-		HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
-		con.connect();
-		con.getInputStream();
-		return ImageIO.read(url);
+
+		InputStream istream = null;
+		try {
+			istream = url.openStream();
+		} catch (IOException e) {
+			throw new IIOException("Can't get input stream from URL!", e);
+		}
+		ImageInputStream stream = ImageIO.createImageInputStream(istream);
+		
+		return ImageIO.read(stream);
+	}
+	
+	public List<ProductVO> getWebImg(List<ProductVO> list) throws IOException {
+		ImageInputStream stream = null;
+		InputStream istream = null;
+		for (ProductVO productVO : list) {
+			URL url = new URL(productVO.getImgUrl());
+//			URLConnection uc = urlObj.openConnection();
+//			HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
+//			con.connect();
+//			con.getInputStream();
+			
+			try {
+				istream = url.openStream();
+			} catch (IOException e) {
+				throw new IIOException("Can't get input stream from URL!", e);
+			}
+			stream = ImageIO.createImageInputStream(istream);
+//			BufferedImage bi;
+			productVO.setImgBuf(ImageIO.read(stream));
+		}
+//		try {
+////			bi = ImageIO.read(stream);
+////			if (bi == null) {
+//			stream.close();
+////			}
+//		} finally {
+//			istream.close();
+//		}
+		return list;
 	} 
 
 }

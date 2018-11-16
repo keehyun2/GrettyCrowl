@@ -37,17 +37,17 @@ public class NaverService {
 	 * @throws InterruptedException 
 	 * @throws URISyntaxException 
 	 */
-	public String collectProductList(HttpServletRequest request, HttpServletResponse response) throws IOException, InterruptedException, URISyntaxException {
+	public String collectProductList(String searchKeyword) throws IOException, InterruptedException, URISyntaxException {
+		
 		ExecutorService executorService = Executors.newFixedThreadPool(10);
 		EventFiringWebDriver eDriver = new WebDriverConfig().getWebDriver(); 
 		DBUtil dbUtil = new DBUtil(); // 몽고 디비 연결
-		ImageDiff imageDiff = new ImageDiff(); // image 차이점 or 차이점
 		JaroWinklerDistance jwd = new JaroWinklerDistance(); // 텍스트 유사성
 		Gson gson = new GsonBuilder().setPrettyPrinting().excludeFieldsWithoutExposeAnnotation().create();
 		List<ProductVO> syncList = Collections.synchronizedList( new ArrayList<ProductVO>() );
+		ImageDiff df = new ImageDiff();
 		
 		// url 생성
-		String searchKeyword = request.getParameter("keyword");
 		URIBuilder builder = new URIBuilder();
 		builder.setCharset(Charset.forName("UTF-8"));
 		builder.setScheme("https");
@@ -79,11 +79,11 @@ public class NaverService {
 			productVO.setImgUrl(webElement.findElement(By.className("_productLazyImg")).getAttribute("src"));
 			productVO.setTit(webElement.findElement(By.className("tit")).getText());
 			productVO.setPrice(Integer.parseInt(webElement.findElement(By.className("_price_reload")).getText().replaceAll(",", ""))); 
-			productVO.setImgBuf(imageDiff.getWebImg(productVO.getImgUrl()));
+			productVO.setImgBuf(df.getWebImg(productVO.getImgUrl()));
 			syncList.add(productVO);
 		}
 		
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < 1; i++) {
 			builder.addParameter("minPrice", String.valueOf(recommendedPrice - (1000 * i) - 1000));
 			builder.addParameter("maxPrice", String.valueOf(recommendedPrice - (1000 * i)));
 			executorService.execute(new WebRunnable(builder.build().toURL().toString(), syncList));
@@ -93,12 +93,22 @@ public class NaverService {
 		executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
 		
 		System.out.println("상품 read 완료");
+		
+//		for (ProductVO vo : syncList) {
+//			System.out.println("이미지 가져오는중..");
+//			vo.setImgBuf(df.getWebImg(vo.getImgUrl()));
+//		}
+		df.getWebImg(syncList);
+		
+		System.out.println("이미지 버퍼 저장 완료");
+		
+		
 		List<ProductVO> printList = new ArrayList<ProductVO>();
 		
 		// 이미지 유사성으로 구분한 하위 상품 구분
 		prod:for (int i = 0; i < syncList.size(); i++) {
 			for (int j = 0; j < printList.size(); j++) {
-				double simil = imageDiff.getSimilarity(syncList.get(i).getImgBuf(),printList.get(j).getImgBuf());
+				double simil = ImageDiff.getSimilarity(syncList.get(i).getImgBuf(),printList.get(j).getImgBuf());
 				double txtSimil = jwd.apply(syncList.get(i).getTit(), syncList.get(j).getTit()) * 100;
 				if(simil > 90.0){ // 흰색 여백이 많은 이미지들 때문에 상품이 많이 다른 데도 유사성이 높다고 나타남. 그래서 80에서 90으로 올림..
 					syncList.get(i).setImgSimilarity(simil);
@@ -115,7 +125,7 @@ public class NaverService {
 				Collections.sort(vo.getGroups());
 			}
 		}
-		 
+		
 		System.out.println("이미지, 텍스트 비교 완료");
 		
 		ResultVO resultVO = new ResultVO();

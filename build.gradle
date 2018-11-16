@@ -22,7 +22,7 @@ apply plugin: 'org.gretty'
 gretty {
 	//servletContainer = 'jetty9'
 	httpPort = 9902
-	loggingLevel = 'ERROR'
+	loggingLevel = 'OFF'
 	contextPath = "/"
 }
 

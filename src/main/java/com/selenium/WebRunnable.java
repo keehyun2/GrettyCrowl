@@ -1,7 +1,6 @@
 package com.selenium;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.openqa.selenium.By;
@@ -24,8 +23,8 @@ public class WebRunnable implements Runnable {
 	@Override
 	public void run() {
 		
-		ImageDiff imageDiff = new ImageDiff();
 		EventFiringWebDriver eDriver = new WebDriverConfig().getWebDriver(); 
+		ImageDiff df = new ImageDiff();
 		
 		eDriver.get(this.url);
 		List<WebElement> listGoods = eDriver.findElements(By.className("_itemSection"));
@@ -36,10 +35,9 @@ public class WebRunnable implements Runnable {
 			productVO.setTit(webElement.findElement(By.className("tit")).getText());
 			productVO.setPrice(Integer.parseInt(webElement.findElement(By.className("_price_reload")).getText().replaceAll(",", "")));
 			try {
-				productVO.setImgBuf(imageDiff.getWebImg(productVO.getImgUrl()));
+				productVO.setImgBuf(df.getWebImg(productVO.getImgUrl()));
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
-				System.out.println(productVO.getImgUrl());
 				e.printStackTrace();
 			}
 			this.syncList.add(productVO);

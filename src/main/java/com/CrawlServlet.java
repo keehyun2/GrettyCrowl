@@ -34,7 +34,7 @@ public class CrawlServlet extends HttpServlet {
 			NaverService ns = new NaverService();
 			String result = "{}";
 				try {
-					result = ns.collectProductList(request, response);
+					result = ns.collectProductList(request.getParameter("keyword"));
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
