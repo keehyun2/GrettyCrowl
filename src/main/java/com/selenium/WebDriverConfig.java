@@ -3,6 +3,7 @@ package com.selenium;
 import java.util.concurrent.TimeUnit;
 
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.support.events.EventFiringWebDriver;
 
@@ -16,7 +17,11 @@ public class WebDriverConfig {
 	 */
 	public EventFiringWebDriver getWebDriver() {
 
+		// 웹드라이버 설정 영역
 		WebDriver driver = new HtmlUnitDriver(BrowserVersion.CHROME);
+//		System.setProperty("webdriver.chrome.driver", "C:\\chromedriver.exe");
+//		WebDriver driver = new ChromeDriver();
+		
 		WebEventListener eventListener = new WebEventListener();
 
 		((HtmlUnitDriver) driver).setJavascriptEnabled(true);
